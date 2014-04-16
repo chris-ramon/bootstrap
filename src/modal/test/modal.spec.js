@@ -3,7 +3,7 @@ describe('$modal', function () {
   var $modal, $modalProvider;
 
   var triggerKeyDown = function (element, keyCode) {
-    var e = $.Event("keydown");
+    var e = $.Event('keydown');
     e.which = keyCode;
     element.trigger(e);
   };
@@ -33,13 +33,13 @@ describe('$modal', function () {
     $modal = _$modal_;
   }));
 
-  beforeEach(inject(function ($rootScope) {
+  beforeEach(function () {
     this.addMatchers({
 
       toBeResolvedWith: function(value) {
         var resolved;
         this.message = function() {
-          return "Expected '" + angular.mock.dump(this.actual) + "' to be resolved with '" + value + "'.";
+          return 'Expected "' + angular.mock.dump(this.actual) + '" to be resolved with "' + value + '".';
         };
         this.actual.then(function(result){
           resolved = result;
@@ -52,7 +52,7 @@ describe('$modal', function () {
       toBeRejectedWith: function(value) {
         var rejected;
         this.message = function() {
-          return "Expected '" + angular.mock.dump(this.actual) + "' to be rejected with '" + value + "'.";
+          return 'Expected "' + angular.mock.dump(this.actual) + '" to be rejected with "' + value + '".';
         };
         this.actual.then(angular.noop, function(reason){
           rejected = reason;
@@ -67,7 +67,7 @@ describe('$modal', function () {
         var contentToCompare, modalDomEls = this.actual.find('body > div.modal > div.modal-dialog > div.modal-content');
 
         this.message = function() {
-          return "Expected '" + angular.mock.dump(modalDomEls) + "' to be open with '" + content + "'.";
+          return '"Expected "' + angular.mock.dump(modalDomEls) + '" to be open with "' + content + '".';
         };
 
         contentToCompare = selector ? modalDomEls.find(selector) : modalDomEls;
@@ -84,13 +84,13 @@ describe('$modal', function () {
 
         var backdropDomEls = this.actual.find('body > div.modal-backdrop');
         this.message = function() {
-          return "Expected '" + angular.mock.dump(backdropDomEls) + "' to be a backdrop element'.";
+          return 'Expected "' + angular.mock.dump(backdropDomEls) + '" to be a backdrop element".';
         };
 
         return backdropDomEls.length === 1;
       }
     });
-  }));
+  });
 
   afterEach(function () {
     var body = $document.find('body');
@@ -335,7 +335,7 @@ describe('$modal', function () {
 
     describe('scope', function () {
 
-      it('should custom scope if provided', function () {
+      it('should use custom scope if provided', function () {
         var $scope = $rootScope.$new();
         $scope.fromScope = 'Content from custom scope';
         open({
@@ -343,6 +343,17 @@ describe('$modal', function () {
           scope: $scope
         });
         expect($document).toHaveModalOpenWithContent('Content from custom scope', 'div');
+      });
+
+      it('should create and use child of $rootScope if custom scope not provided', function () {
+
+        var scopeTailBefore = $rootScope.$$childTail;
+
+        $rootScope.fromScope = 'Content from root scope';
+        open({
+          template: '<div>{{fromScope}}</div>'
+        });
+        expect($document).toHaveModalOpenWithContent('Content from root scope', 'div');
       });
     });
 

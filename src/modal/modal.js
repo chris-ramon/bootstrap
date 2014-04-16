@@ -141,8 +141,11 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         openedWindows.remove(modalInstance);
 
         //remove window DOM element
-        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, 300, checkRemoveBackdrop);
-        body.toggleClass(OPENED_MODAL_CLASS, openedWindows.length() > 0);
+        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, 300, function() {
+          modalWindow.modalScope.$destroy();
+          body.toggleClass(OPENED_MODAL_CLASS, openedWindows.length() > 0);
+          checkRemoveBackdrop();
+        });
       }
 
       function checkRemoveBackdrop() {
@@ -197,7 +200,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
           modal = openedWindows.top();
           if (modal && modal.value.keyboard) {
             $rootScope.$apply(function () {
-              $modalStack.dismiss(modal.key);
+              $modalStack.dismiss(modal.key, 'escape key press');
             });
           }
         }
@@ -221,7 +224,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
           backdropDomEl = $compile('<div modal-backdrop></div>')(backdropScope);
           body.append(backdropDomEl);
         }
-          
+
         var angularDomEl = angular.element('<div modal-window></div>');
         angularDomEl.attr('window-class', modal.windowClass);
         angularDomEl.attr('index', openedWindows.length() - 1);
